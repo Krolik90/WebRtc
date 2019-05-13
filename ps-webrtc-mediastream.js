@@ -1,18 +1,12 @@
-/*
- ps-webrtc-mediastream.js
- Author: Lisa Larson-Kelley (http://learnfromlisa.com)
- WebRTC Fundamentals -- Pluralsight.com
- Version 1.0.0
- --
- Example of MediaStream API: getUserMedia
-*/
 
 var ctx;
 var canvas;
 var video;
 var dataURI;
+var serverUrl = 'https://twfphotouploader.azurewebsites.net/api/HttpTrigger1';
 
 navigator.getWebcam = ( navigator.getUserMedia ||
+                        navigator.mediaDevices.getUserMedia ||
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia ||
                          navigator.msGetUserMedia);
@@ -80,4 +74,38 @@ function captureImage() {
     var screenshot = document.querySelector('#screenshot');
     screenshot.src = dataURI;
 }
+
+function postJpeg() {
+    var blobdata = createBlob(this.dataURI);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log('success');
+        }
+    }
+    xhttp.open('POST', this.serverUrl, true);
+    xhttp.send(blobdata);
+}
+
+function createBlob(dataURL) {
+    var BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+      var parts = dataURL.split(',');
+      var contentType = parts[0].split(':')[1];
+      var raw = decodeURIComponent(parts[1]);
+      return new Blob([raw], { type: contentType });
+    }
+    var parts = dataURL.split(BASE64_MARKER);
+    var contentType = parts[0].split(':')[1];
+    var raw = window.atob(parts[1]);
+    var rawLength = raw.length;
+  
+    var uInt8Array = new Uint8Array(rawLength);
+  
+    for (var i = 0; i < rawLength; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+  
+    return new Blob([uInt8Array], { type: contentType });
+  }
 
