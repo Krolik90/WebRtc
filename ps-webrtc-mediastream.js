@@ -58,20 +58,25 @@ function gotWebcam(stream) {
         });
     }
     createCanvas();
+    //setCanvasSize(this.video.videoWidth, this.video.videoHeight);
 };
 
 // function playVideo() {
 //  this.video.play();
 // }
+function setCanvasSize(width, height) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+}
 
 function createCanvas() {
-    this.canvas = document.querySelector('canvas');
+    this.canvas = document.getElementById('canvas');
     this.ctx = canvas.getContext('2d');
 }
 
 function captureImage() {
     this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
-    this.dataURI = this.canvas.toDataUrl('image/jpeg');
+    this.dataURI = this.canvas.toDataURL('image/jpeg');
     var screenshot = document.querySelector('#screenshot');
     screenshot.src = dataURI;
 }
